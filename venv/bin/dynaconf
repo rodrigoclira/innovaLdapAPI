@@ -1,4 +1,4 @@
-#!/Users/magno/projetos/innovaLdapAPI/venv/bin/python3
+#!/home/rcls/codigos/git-projects/innovaLdapAPI/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
