@@ -4,6 +4,7 @@ from inndapi.ext.database import db
 def create_db():
     """Creates database"""
     db.create_all()
+    print("Creation was finished")
 
 
 def drop_db():

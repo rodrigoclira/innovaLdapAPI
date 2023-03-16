@@ -34,7 +34,7 @@ DEBUG_TB_PANELS = [
     "flask_debugtoolbar.panels.profiler.ProfilerDebugPanel",
     "flask_debugtoolbar.panels.config_vars.ConfigVarsDebugPanel",
 ]
-SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:mysqldocker@127.0.0.1/inndapi"
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:mysql@127.0.0.1/inndapi"
 TITLE = "InnDAPI"
 SECRET_KEY = "sadkaom0a29j2"
 PASSWORD_SCHEMES = ['pbkdf2_sha512', 'md5_crypt']
