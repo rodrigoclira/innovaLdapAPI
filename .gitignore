@@ -2,6 +2,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,visualstudio,visualstudiocode,linux,macos,pycharm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudio,visualstudiocode,linux,macos,pycharm+all
 
+data/
+
 ### Linux ###
 *~
 
