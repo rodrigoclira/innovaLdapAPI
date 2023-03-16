@@ -59,6 +59,15 @@ Resumo de contas registradas com usuário pronto para sincronização com  a bas
 `pip install -r requirements.txt`
 
 ### Configuração do banco de dados
+
+Acessando o container 
+```
+sudo docker exec -it mysql_inova bash
+```
+```
+sudo mysql -u root
+```
+
 a. Acessar o MySQL e criar o banco `inndapi`:
 ```mariadb
 create database inndapi;
