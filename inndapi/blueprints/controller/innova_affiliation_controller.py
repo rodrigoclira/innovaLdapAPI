@@ -14,7 +14,8 @@ class InnovaAffiliationController(Resource):
     def delete(self, id):
         try:
             self.service.delete(id)
-            return jsonify(dict({'status': 'ok'}))
+            response = jsonify(dict({'status': 'ok'}))
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:

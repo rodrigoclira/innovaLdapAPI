@@ -86,7 +86,7 @@ class LdapServerService(AbstractCrud):
         return self.sync(pk)
 
     def save_entry(self, pk: LdapServer.id, uid, is_update=False):
-
+        " Salvar no LDAP "
         entity: LdapServer = self.find_by_pk(pk)
         entry = self.entry_service.find_by_pk(uid)
 

@@ -17,9 +17,8 @@ class InnovaPersonController(Resource):
        
         try:
             entities = self.service.find_all()
-            return jsonify(
-                [entity.to_dict() for entity in entities]
-            )
+            response = jsonify( [entity.to_dict() for entity in entities])
+            return response
         except Exception:
             abort(500, "Erro Inesperado")
 
@@ -28,7 +27,8 @@ class InnovaPersonController(Resource):
         try:
             res = self.service.save(**entity)
             self.domain_service.send_mail_create(res)
-            return res.to_dict(), 201
+            response = res.to_dict(), 201
+            return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
         except exc.SQLAlchemyError as e:
@@ -45,7 +45,8 @@ class InnovaPersonIdController(Resource):
     def get(self, uid):
         try:
             entity = self.service.find_by_pk(uid)
-            return entity.to_dict()
+            response = entity.to_dict()
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:
@@ -58,7 +59,8 @@ class InnovaPersonIdController(Resource):
         entity = request.get_json(force=True)
         try:
             res = self.service.update(**entity)
-            return res.to_dict(), 200
+            response = res.to_dict(), 200
+            return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
         except ResourceDoesNotExist as rdne:
@@ -69,7 +71,8 @@ class InnovaPersonIdController(Resource):
     def delete(self, uid):
         try:
             self.service.delete(uid)
-            return jsonify(dict({'status': 'ok'}))
+            response = jsonify(dict({'status': 'ok'}))
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:

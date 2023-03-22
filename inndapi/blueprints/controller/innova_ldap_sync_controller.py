@@ -40,15 +40,17 @@ class InnovaLdapSyncController(Resource):
             except Exception:
                 abort(500, "Erro Inesperado")
 
-        return jsonify(
+        response = jsonify(
             {"innova-ldap-sync": [entity.to_dict() for entity in entities]}
         )
+        return response
 
     def post(self):
         entity = request.get_json(force=True)
         try:
             res = self.service.save(**entity)
-            return res.to_dict(), 201
+            response = res.to_dict(), 201
+            return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
         except exc.SQLAlchemyError as e:
@@ -66,7 +68,8 @@ class InnovaLdapSyncIdController(Resource):
     def get(self, id):
         try:
             entity = self.service.find_by_pk(id)
-            return entity.to_dict()
+            response = entity.to_dict()
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:
@@ -81,12 +84,14 @@ class InnovaLdapSyncIdController(Resource):
 
         if resolve:
             self.service.deliberate(sync_id=id, resolve=resolve)
-            return jsonify(dict({'status': 'ok'}))
+            response = jsonify(dict({'status': 'ok'}))
+            return response
 
         entity = request.get_json(force=True)
         try:
             res = self.service.update(**entity)
-            return res.to_dict(), 200
+            response = res.to_dict(), 200
+            return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
         except ResourceDoesNotExist as rdne:
@@ -97,7 +102,8 @@ class InnovaLdapSyncIdController(Resource):
     def delete(self, id):
         try:
             self.service.delete(id)
-            return jsonify(dict({'status': 'ok'}))
+            response = jsonify(dict({'status': 'ok'}))
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:

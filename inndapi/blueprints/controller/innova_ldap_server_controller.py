@@ -14,9 +14,8 @@ class InnovaLdapServeController(Resource):
     def get(self):
         try:
             entities = self.service.find_all()
-            return jsonify(
-                [entity.to_dict() for entity in entities]
-            )
+            response = jsonify([entity.to_dict() for entity in entities])
+            return response
         except Exception:
             abort(500, "Erro Inesperado")
 
@@ -24,7 +23,8 @@ class InnovaLdapServeController(Resource):
         entity = request.get_json(force=True)
         try:
             res = self.service.save(**entity)
-            return res.to_dict(), 201
+            response = res.to_dict(), 201
+            return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
         except exc.SQLAlchemyError as e:
@@ -41,7 +41,8 @@ class InnovaLdapServerIdController(Resource):
     def get(self, id):
         try:
             entity = self.service.find_by_pk(id)
-            return jsonify(entity.to_dict())
+            response = jsonify(entity.to_dict())
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:
@@ -62,15 +63,14 @@ class InnovaLdapServerIdController(Resource):
                     entity = self.service.sync_entity(pk=id, uid=uid)
                 except ResourceDoesNotExist as rdne:
                     abort(rdne.code, str(rdne) + " on LDAP Server")
-                except ResourceDoesNotExist as rdne:
-                    abort(rdne.code, str(rdne))
                 except Exception:
                     abort(500, 'Erro Inesperado')
 
             elif service == 'sync':
                 try:
                     entity = self.service.sync_entries(pk=id)
-                    return entity, 200
+                    response = entity, 200
+                    return response
                 except Exception as e:
                     abort(500, str(e))
 
@@ -96,20 +96,23 @@ class InnovaLdapServerIdController(Resource):
                 entity = request.get_json(force=True)
                 try:
                     res = self.service.update(**entity)
-                    return res.to_dict(), 200
+                    response = res.to_dict(), 200
+                    return response
                 except MissedFields as mf:
                     abort(mf.code, str(mf))
                 except ResourceDoesNotExist as rdne:
                     abort(rdne.code, str(rdne))
                 except Exception:
                     abort(500, "Erro inesperado")
-            return jsonify(entity.to_dict())
+            response = jsonify(entity.to_dict())
+            return response
 
 
     def delete(self, id):
         try:
             self.service.delete(id)
-            return jsonify(dict({'status': 'ok'}))
+            response = jsonify(dict({'status': 'ok'}))
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:
@@ -124,7 +127,8 @@ class InnovaLdapServerUserController(Resource):
         person = request.get_json(force=True)
         try:
             res = self.service.change_password(pk=id, **person)
-            return jsonify(res.to_dict())
+            response = jsonify(res.to_dict())
+            return response
         except InvalidPassword as ip:
             abort(ip.code, str(ip))
         except Exception:

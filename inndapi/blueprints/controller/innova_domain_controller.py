@@ -13,9 +13,8 @@ class InnovaGatewayController(Resource):
     def get(self):
         try:
             gateways = self.service.find_all()
-            return jsonify(
-                [gateway.to_dict() for gateway in gateways]
-            )
+            response = jsonify([gateway.to_dict() for gateway in gateways])
+            return response
         except Exception:
             abort(500, "Erro Inesperado")
 
@@ -23,7 +22,8 @@ class InnovaGatewayController(Resource):
         gateway = request.get_json(force=True)
         try:
             res = self.service.save(**gateway)
-            return res.to_dict(), 201
+            response = res.to_dict(), 201
+            return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
         except ResourceDoesNotExist as rdne:
@@ -40,7 +40,8 @@ class InnovaGatewayIdController(Resource):
     def get(self, id):
         try:
             gateway = self.service.find_by_pk(id)
-            return jsonify(gateway.to_dict())
+            response = jsonify(gateway.to_dict())
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:
@@ -50,7 +51,8 @@ class InnovaGatewayIdController(Resource):
         gateway = request.get_json(force=True)
         try:
             res = self.service.update(**gateway)
-            return res.to_dict(), 200
+            response = res.to_dict(), 200
+            return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
         except ResourceDoesNotExist as rdne:
@@ -61,7 +63,8 @@ class InnovaGatewayIdController(Resource):
     def delete(self, id):
         try:
             self.service.delete(id)
-            return jsonify(dict({'status': 'ok'}))
+            response = jsonify(dict({'status': 'ok'}))
+            return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
         except Exception:
