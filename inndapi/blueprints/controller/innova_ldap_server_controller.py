@@ -1,7 +1,7 @@
 from flask import jsonify, request, abort
 from flask_restful import Resource, reqparse
 from sqlalchemy import exc
-
+import logging
 from inndapi.service.error_handler import *
 from inndapi.service import LdapServerService
 
@@ -16,8 +16,8 @@ class InnovaLdapServeController(Resource):
             entities = self.service.find_all()
             response = jsonify([entity.to_dict() for entity in entities])
             return response
-        except Exception:
-            abort(500, "Erro Inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
     def post(self):
         entity = request.get_json(force=True)
@@ -29,8 +29,8 @@ class InnovaLdapServeController(Resource):
             abort(mf.code, str(mf))
         except exc.SQLAlchemyError as e:
             abort(400, "duplicado")
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
 
 class InnovaLdapServerIdController(Resource):
@@ -45,8 +45,8 @@ class InnovaLdapServerIdController(Resource):
             return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
     def put(self, id):
 
@@ -56,6 +56,7 @@ class InnovaLdapServerIdController(Resource):
             args = parser.parse_args()
 
             service = args.get('service')
+            logging.log(logging.INFO, f'Starting service={service}')
 
             if service == 'sync-entity':
                 uid = args.get('uid')
@@ -63,12 +64,12 @@ class InnovaLdapServerIdController(Resource):
                     entity = self.service.sync_entity(pk=id, uid=uid)
                 except ResourceDoesNotExist as rdne:
                     abort(rdne.code, str(rdne) + " on LDAP Server")
-                except Exception:
-                    abort(500, 'Erro Inesperado')
+                except Exception as e:
+                    abort(500, str(e))
 
             elif service == 'sync':
                 try:
-                    entity = self.service.sync_entries(pk=id)
+                    entity = self.service.sync_entries(ldap_pk=id)
                     response = entity, 200
                     return response
                 except Exception as e:
@@ -80,8 +81,8 @@ class InnovaLdapServerIdController(Resource):
                     entity = self.service.save_entry(pk=id, uid=uid, is_update=False)
                 except ResourceDoesNotExist as rdne:
                     abort(rdne.code, str(rdne))
-                except Exception:
-                    abort(500, 'Erro Inesperado')
+                except Exception as e:
+                    abort(500, str(e))
 
             elif service == 'update':
                 uid = args.get('uid')
@@ -89,8 +90,8 @@ class InnovaLdapServerIdController(Resource):
                     entity = self.service.save_entry(pk=id, uid=uid, is_update=True)
                 except ResourceDoesNotExist as rdne:
                     abort(rdne.code, str(rdne))
-                except Exception:
-                    abort(500, 'Erro Inesperado')
+                except Exception as e:
+                    abort(500, str(e))
 
             else:
                 entity = request.get_json(force=True)
@@ -102,8 +103,8 @@ class InnovaLdapServerIdController(Resource):
                     abort(mf.code, str(mf))
                 except ResourceDoesNotExist as rdne:
                     abort(rdne.code, str(rdne))
-                except Exception:
-                    abort(500, "Erro inesperado")
+                except Exception as e:
+                    abort(500, str(e))
             response = jsonify(entity.to_dict())
             return response
 
@@ -115,8 +116,8 @@ class InnovaLdapServerIdController(Resource):
             return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
 class InnovaLdapServerUserController(Resource):
 
@@ -131,6 +132,6 @@ class InnovaLdapServerUserController(Resource):
             return response
         except InvalidPassword as ip:
             abort(ip.code, str(ip))
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
 

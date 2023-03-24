@@ -15,8 +15,8 @@ class MailServerController(Resource):
             entities = self.service.find_all()
             response = jsonify([entity.to_dict() for entity in entities])
             return response
-        except Exception:
-            abort(500, "Erro Inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
     def post(self):
         entity = request.get_json(force=True)
@@ -26,8 +26,8 @@ class MailServerController(Resource):
             return response
         except MissedFields as mf:
             abort(mf.code, str(mf))
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
 
 class MailServerIdController(Resource):
@@ -42,8 +42,8 @@ class MailServerIdController(Resource):
             return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
     def put(self, id):
         entity = request.get_json(force=True)
@@ -55,8 +55,8 @@ class MailServerIdController(Resource):
             abort(mf.code, str(mf))
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
 
     def delete(self, id):
         try:
@@ -65,5 +65,5 @@ class MailServerIdController(Resource):
             return response
         except ResourceDoesNotExist as rdne:
             abort(rdne.code, str(rdne))
-        except Exception:
-            abort(500, "Erro inesperado")
+        except Exception as e:
+            abort(500, str(e))
