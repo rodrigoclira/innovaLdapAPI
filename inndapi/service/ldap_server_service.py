@@ -69,21 +69,25 @@ class LdapServerService(AbstractCrud):
 
         return old_ldap_server
 
-    def sync_entries(self, pk: LdapServer.id):
+    def sync_entries(self, ldap_pk: LdapServer.id):
         logging.log(logging.INFO, 'Tasks: Start sync entries')
 
         def run(t_list, is_update=False):
             for t in t_list:
-                self.save_entry(pk, t.uid_innova_person, is_update)
+                self.save_entry(ldap_pk, t.uid_innova_person, is_update)
 
-        entity = self.find_by_pk(pk)
+        entity = self.find_by_pk(ldap_pk)
+        
         to_save = self.sync_service.find_all_by_status(InnovaLdapSyncEnum.VALID, entity.domain)
+        logging.log(logging.INFO, f'Tasks: entries to save={len(to_save)}')
         to_update = self.sync_service.find_all_by_status(InnovaLdapSyncEnum.UPDATE, entity.domain)
+        logging.log(logging.INFO, f'Tasks: entries to update={len(to_update)}')
 
         run(to_save, False)
         run(to_update, True)
 
-        return self.sync(pk)
+        synced_person = self.sync(ldap_pk)
+        return synced_person
 
     def save_entry(self, pk: LdapServer.id, uid, is_update=False):
         " Salvar no LDAP "
@@ -206,6 +210,8 @@ class LdapServerService(AbstractCrud):
                 except Exception:
                     sync_errors.append({'base_dn': base})
                     logging.log(logging.WARN, f'Can\'t update sync {base}')
+        
+        #people.sort(key=lambda inova_dict: f"{inova_dict['name'].upper()} {inova_dict['surname'].upper()}")
         people.append(dict({'errors': sync_errors}))
         return people
 
