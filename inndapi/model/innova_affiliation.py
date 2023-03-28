@@ -26,8 +26,8 @@ class InnovaAffiliation(db.Model, SerializerMixin):
         self.id = kwargs.get('id')
         self.affiliation = kwargs.get('affiliation')
         self.organization = kwargs.get('organization')
-        self.type = kwargs.get('type')
-        self.subtype = kwargs.get('subtype')
+        self.type = None if not kwargs.get('type') else InnovaAffiliationTypeEnum(kwargs.get('type').lower()) #fixing issue map entry
+        self.subtype = None if not kwargs.get('subtype') else InnovaAffiliationSubTypeEnum(kwargs.get('subtype').lower()) #fixing issue map entry
         self.role = kwargs.get('role')
         self.entrance = kwargs.get('entrance')
         self.exit = kwargs.get('exit')
@@ -46,7 +46,7 @@ class InnovaAffiliation(db.Model, SerializerMixin):
         elif not isinstance(self.entrance, str):
             exit_value = self.exit.strftime("%Y%m%d") 
         else:
-             exit_value = self.entrance.replace('-','')
+            exit_value = self.entrance.replace('-','')
 
         return {
             'objectclass': {
