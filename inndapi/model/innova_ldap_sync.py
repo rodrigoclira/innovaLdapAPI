@@ -21,3 +21,12 @@ class InnovaLdapSync(db.Model, SerializerMixin):
 
     def __repr__(self):
         return str(self.__dict__)
+
+    def copy(self):
+        new_model = InnovaLdapSync()
+        new_model.id = self.id
+        new_model.uid_innova_person = self.uid_innova_person
+        new_model.status = self.status
+        new_model.date = self.date
+        new_model.domain = self.domain
+        return new_model

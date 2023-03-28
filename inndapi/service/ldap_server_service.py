@@ -217,32 +217,33 @@ class LdapServerService(AbstractCrud):
 
     def sync_entity(self, pk: LdapServer.id, uid: InnovaPerson.uid):
 
-        entity: LdapServer = self.find_by_pk(pk)
-        person: InnovaPerson = self.entry_service.find_by_pk(uid)
+        ldap_entity: LdapServer = self.find_by_pk(pk)
+        person_entity: InnovaPerson = self.entry_service.find_by_pk(uid)
 
-        if person.ldap_sync.status == InnovaLdapSyncEnum.REJECTED: return {}
-        if not person.ldap_sync.status == InnovaLdapSyncEnum.SYNC \
-                and not person.ldap_sync.status == InnovaLdapSyncEnum.UPDATE:
-            raise ResourceDoesNotExist(InnovaPerson, person.uid)
+        if person_entity.ldap_sync.status == InnovaLdapSyncEnum.REJECTED: return {}
+        if not person_entity.ldap_sync.status == InnovaLdapSyncEnum.SYNC \
+                and not person_entity.ldap_sync.status == InnovaLdapSyncEnum.UPDATE:
+            raise ResourceDoesNotExist(InnovaPerson, person_entity.uid)
         
 
         ldap = LdapCore(
-            host=entity.ip,
-            port=entity.port,
-            base_dn=entity.base_dn,
-            bind_dn=entity.bind_dn,
-            bind_credential=entity.bind_credential
+            host=ldap_entity.ip,
+            port=ldap_entity.port,
+            base_dn=ldap_entity.base_dn,
+            bind_dn=ldap_entity.bind_dn,
+            bind_credential=ldap_entity.bind_credential
         )
 
-        new_person = self.process_data(ldap=ldap, person=person)
+        new_person = self.process_data(ldap=ldap, person=person_entity)
         new_person.to_update = None
 
-        sync: InnovaLdapSync = person.ldap_sync
+        sync: InnovaLdapSync = person_entity.ldap_sync.copy()        
         sync.status = InnovaLdapSyncEnum.SYNC
         sync.date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.sync_service.update(entity=sync)
 
-        return self.entry_service.update(entity=new_person, from_ldap=True)
+        updated_entity = self.entry_service.update(entity=new_person, from_ldap=True, sync=True)
+        return updated_entity
 
     @staticmethod
     def process_data(ldap: LdapCore, person: InnovaPerson, search_dn: str = None):
